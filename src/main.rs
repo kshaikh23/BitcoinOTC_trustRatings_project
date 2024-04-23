@@ -1,12 +1,10 @@
 use std::fs::File;
 use std::io::BufRead;
+#[cfg(test)]
+mod tests;
 
 fn main() {
     let data = read_file("bitcoinOTC_trust_data.csv");
-
-    for line in data {
-        println!("{}, {}, {}, {}", line.0, line.1, line.2, line.3);
-    }
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
@@ -23,4 +21,21 @@ fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
         result.push((a, b, c, d));
     }
     return result
+}
+
+#[derive(PartialEq)]
+#[derive(Debug)]
+pub enum VecType {
+    IntVec(Vec<i32>),
+    FltVec(Vec<f64>),
+}
+
+pub fn col_to_vec(data: &Vec<(i32, i32, i32, f64)>, col: i32) -> VecType {
+    match col {
+        0 => VecType::IntVec(data.into_iter().map(|line| line.0).collect()),
+        1 => VecType::IntVec(data.into_iter().map(|line| line.1).collect()),
+        2 => VecType::IntVec(data.into_iter().map(|line| line.2).collect()),
+        3 => VecType::FltVec(data.into_iter().map(|line| line.3).collect()),
+        _ => panic!("Column index is out of bounds."),
+    }
 }
