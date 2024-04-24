@@ -10,6 +10,9 @@ fn main() {
     let min_time: f64 = data[0].3;
     println!("Length of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
     println!("{} to {}", 1970.0 + min_time/31_536_000.0, 1970.0 + max_time/31_536_000.0);
+
+    let times_enum: VecType = col_to_vec(&data, 3);
+    let times: Vec<f64> = times_enum.get_flt_vec().unwrap();
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
@@ -33,6 +36,24 @@ fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
 pub enum VecType {
     IntVec(Vec<i32>),
     FltVec(Vec<f64>),
+}
+
+impl VecType {
+    pub fn get_int_vec(self) -> Option<Vec<i32>> {
+        if let VecType::IntVec(vec) = self {
+            return Some(vec)
+        } else {
+            return None
+        }
+    }
+
+    pub fn get_flt_vec(self) -> Option<Vec<f64>> {
+        if let VecType::FltVec(vec) = self {
+            return Some(vec)
+        } else {
+            return None
+        }
+    }
 }
 
 pub fn col_to_vec(data: &Vec<(i32, i32, i32, f64)>, col: i32) -> VecType {
