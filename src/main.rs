@@ -4,7 +4,12 @@ use std::io::BufRead;
 mod tests;
 
 fn main() {
-    let data = read_file("bitcoinOTC_trust_data.csv");
+    let data: Vec<(i32, i32, i32, f64)> = read_file("bitcoinOTC_trust_data.csv");
+
+    let max_time: f64 = data[data.len()-1].3;
+    let min_time: f64 = data[0].3;
+    println!("Length of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
+    println!("{} to {}", 1970.0 + min_time/31_536_000.0, 1970.0 + max_time/31_536_000.0);
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
