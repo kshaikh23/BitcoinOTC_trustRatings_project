@@ -1,5 +1,7 @@
 use std::fs::File;
 use std::io::BufRead;
+extern crate chrono;
+use chrono::{Datelike, DateTime};
 #[cfg(test)]
 mod tests;
 
@@ -12,7 +14,8 @@ fn main() {
     println!("{} to {}", 1970.0 + min_time/31_536_000.0, 1970.0 + max_time/31_536_000.0);
 
     let times_enum: VecType = col_to_vec(&data, 3);
-    let times: Vec<f64> = times_enum.get_flt_vec().unwrap();
+    let times_epoch: Vec<f64> = times_enum.get_flt_vec().unwrap();
+    let times_month_year: Vec<(u32, i32)> = times_epoch.iter().map(|&seconds| epoch_to_date(seconds)).collect();
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
@@ -64,4 +67,9 @@ pub fn col_to_vec(data: &Vec<(i32, i32, i32, f64)>, col: i32) -> VecType {
         3 => VecType::FltVec(data.into_iter().map(|line| line.3).collect()),
         _ => panic!("Column index is out of bounds."),
     }
+}
+
+pub fn epoch_to_date(seconds: f64) -> (u32, i32) {
+    let datetime = DateTime::from_timestamp(seconds as i64, 0);
+    return (datetime.expect("Error in epoch_to_date month").month(), datetime.expect("Error in epoch_to_date year").year())
 }
