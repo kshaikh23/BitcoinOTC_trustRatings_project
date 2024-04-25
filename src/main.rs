@@ -13,9 +13,8 @@ fn main() {
     println!("Length of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
     println!("{} to {}", 1970.0 + min_time/31_536_000.0, 1970.0 + max_time/31_536_000.0);
 
-    let times_enum: VecType = col_to_vec(&data, 3);
-    let times_epoch: Vec<f64> = times_enum.get_flt_vec().unwrap();
-    let times_month_year: Vec<(u32, i32)> = times_epoch.iter().map(|&seconds| epoch_to_date(seconds)).collect();
+    let times: Vec<f64> = col_to_vec(&data, 3).get_flt_vec().unwrap();
+    let times_month_year: Vec<(u32, i32)> = times.iter().map(|&seconds| epoch_to_date(seconds)).collect();
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
