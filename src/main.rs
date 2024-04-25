@@ -15,6 +15,7 @@ fn main() {
 
     let times: Vec<f64> = col_to_vec(&data, 3).get_flt_vec().unwrap();
     let times_month_year: Vec<(u32, i32)> = times.iter().map(|&seconds| epoch_to_date(seconds)).collect();
+    let ratings: Vec<i32> = col_to_vec(&data, 2).get_int_vec().unwrap();
 }
 
 fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
