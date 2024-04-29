@@ -54,34 +54,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ratings_by_month.push(mean_rating);
     unique_times_months_after_start.push(current_time);
 
-    // Create file for graph to be displayed
-    let root = BitMapBackend::new("ratingsOverTime_plot.png", (640, 480)).into_drawing_area();
-
-    // Create chart to plot on
-    root.fill(&WHITE)?;
-    let mut chart = ChartBuilder::on(&root)
-        .caption("Trust Ratings Over Time", ("sans-serif", 40))
-        .x_label_area_size(35).y_label_area_size(40)
-        .build_cartesian_2d(0..*unique_times_months_after_start.last().unwrap(), -10.0..10.0)?;
-    // Calculate ticks for the start of each year
-    let year_ticks: Vec<usize> = unique_times_months_after_start.iter().filter(|&&months| (months + start_month as usize - 1) % 12 == 0).cloned().collect();
-    chart.configure_mesh().x_labels(unique_times_months_after_start.len()).x_label_formatter(&|x| {
-        let year_index = (start_year + ((*x as i32 + start_month as i32 - 1) / 12)) - start_year;
-        if year_ticks.contains(&(*x as usize)) {
-            return format!("{}", start_year + year_index)
-        } else {
-            return "".to_string()
-        }
-    }).draw()?;
-
-    // Plotting
-    chart.draw_series(LineSeries::new(unique_times_months_after_start.iter().zip(ratings_by_month.iter()).map(|(&x, &y)| (x,y)), &RED))?;
-
-    // Finalize graph
-    root.present()?;
-
     // Must have main function return something due to creating the graph
-    return Ok(())
+    return time_ratings_plot(unique_times_months_after_start, ratings_by_month, start_month, start_year);
 }
 
 // To read data from a csv file
@@ -143,4 +117,35 @@ pub fn col_to_vec(data: &Vec<(i32, i32, i32, f64)>, col: i32) -> VecType {
 pub fn epoch_to_date(seconds: f64) -> (u32, i32) {
     let datetime = DateTime::from_timestamp(seconds as i64, 0);
     return (datetime.expect("Error in epoch_to_date month").month(), datetime.expect("Error in epoch_to_date year").year())
+}
+
+pub fn time_ratings_plot(x: Vec<usize>, y: Vec<f64>, start_month: u32, start_year: i32) -> Result<(), Box<dyn std::error::Error>> {
+    // Create file for graph to be displayed
+    let root = BitMapBackend::new("ratingsOverTime_plot.png", (640, 480)).into_drawing_area();
+
+    // Create chart to plot on
+    root.fill(&WHITE)?;
+    let mut chart = ChartBuilder::on(&root)
+        .caption("Trust Ratings Over Time", ("sans-serif", 40))
+        .x_label_area_size(35).y_label_area_size(40)
+        .build_cartesian_2d(0..*x.last().unwrap(), -10.0..10.0)?;
+    // Calculate ticks for the start of each year
+    let year_ticks: Vec<usize> = x.iter().filter(|&&months| (months + start_month as usize - 1) % 12 == 0).cloned().collect();
+    chart.configure_mesh().x_labels(x.len()).x_label_formatter(&|x| {
+        let year_index = (start_year + ((*x as i32 + start_month as i32 - 1) / 12)) - start_year;
+        if year_ticks.contains(&(*x as usize)) {
+            return format!("{}", start_year + year_index)
+        } else {
+            return "".to_string()
+        }
+    }).draw()?;
+
+    // Plotting
+    chart.draw_series(LineSeries::new(x.iter().zip(y.iter()).map(|(&xi, &yi)| (xi,yi)), &RED))?;
+
+    // Finalize graph
+    root.present()?;
+
+    // Must have main function return something due to creating the graph
+    return Ok(())
 }
