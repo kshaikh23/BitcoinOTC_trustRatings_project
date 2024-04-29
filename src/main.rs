@@ -12,7 +12,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let max_time: f64 = data[data.len()-1].3;
     let min_time: f64 = data[0].3;
     println!("Length of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
-    // println!("{} to {}", 1970.0 + min_time/31_536_000.0, 1970.0 + max_time/31_536_000.0);
 
     let times: Vec<f64> = col_to_vec(&data, 3).get_flt_vec().unwrap();
     let times_month_year: Vec<(u32, i32)> = times.iter().map(|&seconds| epoch_to_date(seconds)).collect();
@@ -20,8 +19,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("{:?} to {:?}", times_month_year[0], times_month_year[times_month_year.len() - 1]);
 
     // Makes a new times vector where the values are the months since the first month in the data
-    let start_year = times_month_year[0].1;
-    let start_month = times_month_year[0].0;
+    let start_year: i32 = times_month_year[0].1;
+    let start_month: u32 = times_month_year[0].0;
     let times_months_after_start: Vec<usize> = times_month_year.iter().map(|&(month, year)| {
         let years = year - start_year;
         let months = month as i32 - start_month as i32;
@@ -38,7 +37,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut current_time = times_months_after_start[0];
     let mut current_ratings: Vec<f64> = Vec::new();
     for (&time, &rating) in times_months_after_start.iter().zip(ratings.iter()) {
-        if time != current_time {
+        if time != current_time{
             // Calculate mean
             let mean_rating = current_ratings.iter().sum::<f64>() / current_ratings.len() as f64;
             ratings_by_month.push(mean_rating);
@@ -50,6 +49,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         current_ratings.push(rating as f64);
     }
+    // For the last month
+    let mean_rating = current_ratings.iter().sum::<f64>() / current_ratings.len() as f64;
+    ratings_by_month.push(mean_rating);
+    unique_times_months_after_start.push(current_time);
 
     // Create file for graph to be displayed
     let root = BitMapBackend::new("ratingsOverTime_plot.png", (640, 480)).into_drawing_area();
@@ -60,7 +63,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .caption("Trust Ratings Over Time", ("sans-serif", 40))
         .x_label_area_size(35).y_label_area_size(40)
         .build_cartesian_2d(0..*unique_times_months_after_start.last().unwrap(), -10.0..10.0)?;
-    chart.configure_mesh().x_labels(10).draw()?;
+    // Calculate ticks for the start of each year
+    let year_ticks: Vec<usize> = unique_times_months_after_start.iter().filter(|&&months| (months + start_month as usize - 1) % 12 == 0).cloned().collect();
+    chart.configure_mesh().x_labels(unique_times_months_after_start.len()).x_label_formatter(&|x| {
+        let year_index = (start_year + ((*x as i32 + start_month as i32 - 1) / 12)) - start_year;
+        if year_ticks.contains(&(*x as usize)) {
+            return format!("{}", start_year + year_index)
+        } else {
+            return "".to_string()
+        }
+    }).draw()?;
 
     // Plotting
     chart.draw_series(LineSeries::new(unique_times_months_after_start.iter().zip(ratings_by_month.iter()).map(|(&x, &y)| (x,y)), &RED))?;
@@ -68,7 +80,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Finalize graph
     root.present()?;
 
-    // Must have main function return something due to making the graph
+    // Must have main function return something due to creating the graph
     return Ok(())
 }
 
