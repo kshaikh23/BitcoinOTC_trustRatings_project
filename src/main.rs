@@ -54,8 +54,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     ratings_by_month.push(mean_rating);
     unique_times_months_after_start.push(current_time);
 
+    // To ignore the resulting value that must be returned due to creating the graph
+    let _ = time_ratings_plot(unique_times_months_after_start, ratings_by_month, start_month, start_year);
+
     // Must have main function return something due to creating the graph
-    return time_ratings_plot(unique_times_months_after_start, ratings_by_month, start_month, start_year);
+    return Ok(())
 }
 
 // To read data from a csv file
@@ -146,6 +149,11 @@ pub fn time_ratings_plot(x: Vec<usize>, y: Vec<f64>, start_month: u32, start_yea
     // Finalize graph
     root.present()?;
 
-    // Must have main function return something due to creating the graph
+    // Print observations from plot
+    println!("\nTrust Ratings Over Time plot observations: \nThe average trust rating dipped most significantly in August 2013 to about -2.3.");
+    println!("It was also negative in December 2013 and December 2015.");
+    println!("The highest the average trust rating has been was the first month on the dataset, November 2010.");
+
+    // Must return something due to creating the graph
     return Ok(())
 }
