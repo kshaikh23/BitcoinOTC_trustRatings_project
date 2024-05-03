@@ -57,6 +57,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // To ignore the resulting value that must be returned due to creating the graph
     let _ = time_ratings_plot(unique_times_months_after_start, ratings_by_month, start_month, start_year);
 
+    // Creates filtered data with only trust ratings over 7
+    let strong_ratings_data: Vec<(i32, i32, i32, f64)> = strong_ratings_only(&data);
+
+    println!("Number of trust ratings over 7: {}", strong_ratings_data.len());
+
     // Must have main function return something due to creating the graph
     return Ok(())
 }
@@ -152,8 +157,19 @@ pub fn time_ratings_plot(x: Vec<usize>, y: Vec<f64>, start_month: u32, start_yea
     // Print observations from plot
     println!("\nTrust Ratings Over Time plot observations: \nThe average trust rating dipped most significantly in August 2013 to about -2.3.");
     println!("It was also negative in December 2013 and December 2015.");
-    println!("The highest the average trust rating has been was the first month on the dataset, November 2010.");
+    println!("The highest the average trust rating has been was the first month on the dataset, November 2010.\n");
 
     // Must return something due to creating the graph
     return Ok(())
+}
+
+// Returns filtered data where all edges have a trust rating above 7
+pub fn strong_ratings_only(data: &Vec<(i32, i32, i32, f64)>) -> Vec<(i32, i32, i32, f64)> {
+    let mut new_data: Vec<(i32, i32, i32, f64)> = Vec::new();
+    for line in data {
+        if line.2 > 7 {
+            new_data.push(*line);
+        }
+    }
+    return new_data;
 }
