@@ -65,10 +65,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Number of trust ratings over 7: {} ({:.2}%)\n", strong_ratings_data.len(), (strong_ratings_data.len() as f64 / data.len() as f64)*100.0);
 
     let (full_data_components, full_data_component_sizes) = components_and_sizes(&data);
-    println!("Full data:\nConnected Components: {}\nSize of each component: {:?}\n", full_data_components, full_data_component_sizes); 
+    println!("Full data:\nConnected Components: {}\nSize of each component: {:?}\nTotal amount of nodes: {}\n", full_data_components, full_data_component_sizes, full_data_component_sizes.iter().sum::<usize>()); 
 
     let (strong_ratings_data_components, strong_ratings_data_component_sizes) = components_and_sizes(&strong_ratings_data);
-    println!("Strong ratings only data:\nConnected Components: {}\nSize of each component: {:?}\n", strong_ratings_data_components, strong_ratings_data_component_sizes); 
+    println!("Strong ratings only data:\nConnected Components: {}\nSize of each component: {:?}\nTotal amount of nodes: {}\n", strong_ratings_data_components, strong_ratings_data_component_sizes, strong_ratings_data_component_sizes.iter().sum::<usize>()); 
 
     // Must have main function return something due to creating the graph
     return Ok(())
