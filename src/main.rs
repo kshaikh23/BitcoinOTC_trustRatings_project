@@ -5,6 +5,7 @@ use chrono::{Datelike, DateTime};
 #[cfg(test)]
 mod tests;
 use plotters::prelude::*;
+use std::collections::HashMap;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let data: Vec<(i32, i32, i32, f64)> = read_file("bitcoinOTC_trust_data.csv");
@@ -172,4 +173,22 @@ pub fn strong_ratings_only(data: &Vec<(i32, i32, i32, f64)>) -> Vec<(i32, i32, i
         }
     }
     return new_data;
+}
+
+// Ignoring direction and not doing strongly CC as I don't care about direction to find communities
+struct ConnectedComponents {
+    parent: Vec<usize>,
+    rank: Vec<usize>,
+    size: Vec<usize>,
+}
+
+impl  ConnectedComponents{
+    // Takes n which is the amount of nodes in a dataset
+    fn new(n: usize) -> Self {
+        ConnectedComponents {
+            parent: (0..n).collect(), 
+            rank: vec![0; n],
+            size: vec![1; n],
+        }
+    }
 }
