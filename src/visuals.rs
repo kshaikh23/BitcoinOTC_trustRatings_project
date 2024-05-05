@@ -75,7 +75,7 @@ pub mod visuals {
         // Print observations from bar graph
         println!("Ratings distribution bar graph observations: \n- A majority of the trust ratings given are 1.");
         println!("- Less than 3500 ratings are negative.");
-        println!("- But there are around 2500 ratings of -10 which is the 4th highest total of any rating.\n");
+        println!("- But there are around 2500 ratings of -10 which is the 4th highest total of any rating after 1, 2, and 3.\n");
 
         // Must return something due to creating the bar graph
         return Ok(())
