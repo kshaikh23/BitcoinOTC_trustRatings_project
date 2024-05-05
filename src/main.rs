@@ -223,3 +223,12 @@ impl ConnectedComponents{
         }
     }
 }
+
+pub fn node_count(data: &Vec<(i32, i32, i32, f64)>) -> usize {
+    let mut nodes = HashSet::new();
+    for &(u, v, _, _) in data {
+        nodes.insert(u);
+        nodes.insert(v);
+    }
+    return nodes.len()
+}
