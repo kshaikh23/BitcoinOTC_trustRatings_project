@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let max_time: f64 = data[data.len()-1].3;
     let min_time: f64 = data[0].3;
-    println!("Length of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
+    println!("\nLength of time dataset covers: {} years", (max_time - min_time)/31_536_000.0);
 
     let times: Vec<f64> = col_to_vec(&data, 3).get_flt_vec().unwrap();
     let times_month_year: Vec<(u32, i32)> = times.iter().map(|&seconds| epoch_to_date(seconds)).collect();

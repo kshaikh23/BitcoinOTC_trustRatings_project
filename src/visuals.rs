@@ -31,9 +31,9 @@ pub mod visuals {
         root.present()?;
 
         // Print observations from plot
-        println!("\nTrust Ratings Over Time plot observations: \nThe average trust rating dipped most significantly in August 2013 to about -2.3.");
-        println!("It was also negative in December 2013 and December 2015.");
-        println!("The highest the average trust rating has been was the first month on the dataset, November 2010.\n");
+        println!("\nTrust Ratings Over Time plot observations: \n- The average trust rating dipped most significantly in August 2013 to about -2.3.");
+        println!("- It was also negative in December 2013 and December 2015.");
+        println!("- The highest the average trust rating has been was the first month on the dataset, November 2010.\n");
 
         // Must return something due to creating the plot
         return Ok(())
@@ -71,6 +71,11 @@ pub mod visuals {
 
         // Finalize bar graph
         root.present()?;
+
+        // Print observations from bar graph
+        println!("Ratings distribution bar graph observations: \n- A majority of the trust ratings given are 1.");
+        println!("- Less than 3500 ratings are negative.");
+        println!("- But there are around 2500 ratings of -10 which is the 4th highest total of any rating.\n");
 
         // Must return something due to creating the bar graph
         return Ok(())
