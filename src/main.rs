@@ -6,6 +6,7 @@ use chrono::{Datelike, DateTime};
 mod tests;
 use plotters::prelude::*;
 use std::collections::HashMap;
+use std::collections::HashSet;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let data: Vec<(i32, i32, i32, f64)> = read_file("bitcoinOTC_trust_data.csv");
@@ -178,12 +179,15 @@ pub fn strong_ratings_only(data: &Vec<(i32, i32, i32, f64)>) -> Vec<(i32, i32, i
 // Ignoring direction and not doing strongly CC as I don't care about direction to find communities
 // Uses trees to track each connected component
 struct ConnectedComponents {
+    // Holds parent of each node, root nodes are where index and value are the same
     parent: Vec<usize>,
+    // Measure to help keep each tree as flat as possible
     rank: Vec<usize>,
+    // Stores the amount of nodes in each component for each root node
     size: Vec<usize>,
 }
 
-impl  ConnectedComponents{
+impl ConnectedComponents{
     // Takes n which is the amount of nodes in a dataset
     fn new(n: usize) -> Self {
         ConnectedComponents {
@@ -199,5 +203,23 @@ impl  ConnectedComponents{
             self.parent[u] = self.find_root(self.parent[u]);
         }
         return self.parent[u]; 
+    }
+
+    // To merge two components that connect between the nodes u and v
+    fn merge(&mut self, u: usize, v: usize) {
+        let root_u = self.find_root(u);
+        let root_v = self.find_root(v); 
+        if root_u != root_v {
+            if self.rank[root_u] > self.rank[root_v] {
+                self.parent[root_v] = root_u;
+                self.size[root_u] += self.size[root_v];
+            } else {
+                self.parent[root_u] = root_v;
+                self.size[root_v] += self.size[root_u];
+                if self.rank[root_u] == self.rank[root_v] {
+                    self.rank[root_v] += 1;
+                } 
+            }
+        }
     }
 }
