@@ -1,9 +1,7 @@
-use std::fs::File;
-use std::io::BufRead;
-extern crate chrono;
-use chrono::{Datelike, DateTime};
 #[cfg(test)]
 mod tests;
+mod data_manipulation;
+use data_manipulation::data_manipulation::{read_file, col_to_vec, epoch_to_date, strong_ratings_only};
 use plotters::prelude::*;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -63,7 +61,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let strong_ratings_data: Vec<(i32, i32, i32, f64)> = strong_ratings_only(&data);
 
     println!("Number of trust ratings over 7: {}\n", strong_ratings_data.len());
-    
+
     let (full_data_components, full_data_component_sizes) = components_and_sizes(&data);
     println!("Full data:\nConnected Components: {}\nSize of each component: {:?}\n", full_data_components, full_data_component_sizes); 
 
@@ -72,67 +70,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Must have main function return something due to creating the graph
     return Ok(())
-}
-
-// To read data from a csv file
-fn read_file(path: &str) -> Vec<(i32, i32, i32, f64)> {
-    let mut result: Vec<(i32, i32, i32, f64)> = Vec::new();
-    let file = File::open(path).expect("Could not open file");
-    let reader = std::io::BufReader::new(file).lines().skip(1);
-    for line in reader {
-        let line_str = line.expect("Error reading");
-        let v: Vec<&str> = line_str.trim().split(',').collect();
-        let a = v[0].parse::<i32>().unwrap();
-        let b = v[1].parse::<i32>().unwrap();
-        let c = v[2].parse::<i32>().unwrap();
-        let d = v[3].parse::<f64>().unwrap();
-        result.push((a, b, c, d));
-    }
-    return result
-}
-
-// Enum made so either a vector of i32 or f64 can be returned
-#[derive(PartialEq)]
-#[derive(Debug)]
-pub enum VecType {
-    IntVec(Vec<i32>),
-    FltVec(Vec<f64>),
-}
-
-// Functions to unwrap VecType enum
-impl VecType {
-    pub fn get_int_vec(self) -> Option<Vec<i32>> {
-        if let VecType::IntVec(vec) = self {
-            return Some(vec)
-        } else {
-            return None
-        }
-    }
-
-    pub fn get_flt_vec(self) -> Option<Vec<f64>> {
-        if let VecType::FltVec(vec) = self {
-            return Some(vec)
-        } else {
-            return None
-        }
-    }
-}
-
-// Takes a column of the data and turns it into a vector
-pub fn col_to_vec(data: &Vec<(i32, i32, i32, f64)>, col: i32) -> VecType {
-    match col {
-        0 => VecType::IntVec(data.into_iter().map(|line| line.0).collect()),
-        1 => VecType::IntVec(data.into_iter().map(|line| line.1).collect()),
-        2 => VecType::IntVec(data.into_iter().map(|line| line.2).collect()),
-        3 => VecType::FltVec(data.into_iter().map(|line| line.3).collect()),
-        _ => panic!("Column index is out of bounds."),
-    }
-}
-
-// Converts seconds since epoch to a tuple containing the month and year
-pub fn epoch_to_date(seconds: f64) -> (u32, i32) {
-    let datetime = DateTime::from_timestamp(seconds as i64, 0);
-    return (datetime.expect("Error in epoch_to_date month").month(), datetime.expect("Error in epoch_to_date year").year())
 }
 
 pub fn time_ratings_plot(x: Vec<usize>, y: Vec<f64>, start_month: u32, start_year: i32) -> Result<(), Box<dyn std::error::Error>> {
@@ -169,17 +106,6 @@ pub fn time_ratings_plot(x: Vec<usize>, y: Vec<f64>, start_month: u32, start_yea
 
     // Must return something due to creating the graph
     return Ok(())
-}
-
-// Returns filtered data where all edges have a trust rating above 7
-pub fn strong_ratings_only(data: &Vec<(i32, i32, i32, f64)>) -> Vec<(i32, i32, i32, f64)> {
-    let mut new_data: Vec<(i32, i32, i32, f64)> = Vec::new();
-    for line in data {
-        if line.2 > 7 {
-            new_data.push(*line);
-        }
-    }
-    return new_data;
 }
 
 // Ignoring direction and not doing strongly CC as I don't care about direction to find communities
