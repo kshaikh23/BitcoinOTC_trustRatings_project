@@ -62,7 +62,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Creates filtered data with only trust ratings over 7
     let strong_ratings_data: Vec<(i32, i32, i32, f64)> = strong_ratings_only(&data);
 
-    println!("Number of trust ratings over 7: {}", strong_ratings_data.len());
+    println!("Number of trust ratings over 7: {}\n", strong_ratings_data.len());
+    
+    let (full_data_components, full_data_component_sizes) = components_and_sizes(&data);
+    println!("Full data:\nConnected Components: {}\nSize of each component: {:?}\n", full_data_components, full_data_component_sizes); 
+
+    let (strong_ratings_data_components, strong_ratings_data_component_sizes) = components_and_sizes(&strong_ratings_data);
+    println!("Strong ratings only data:\nConnected Components: {}\nSize of each component: {:?}\n", strong_ratings_data_components, strong_ratings_data_component_sizes); 
 
     // Must have main function return something due to creating the graph
     return Ok(())
