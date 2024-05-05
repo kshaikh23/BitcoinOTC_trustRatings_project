@@ -176,6 +176,7 @@ pub fn strong_ratings_only(data: &Vec<(i32, i32, i32, f64)>) -> Vec<(i32, i32, i
 }
 
 // Ignoring direction and not doing strongly CC as I don't care about direction to find communities
+// Uses trees to track each connected component
 struct ConnectedComponents {
     parent: Vec<usize>,
     rank: Vec<usize>,
@@ -190,5 +191,13 @@ impl  ConnectedComponents{
             rank: vec![0; n],
             size: vec![1; n],
         }
+    }
+
+    // To find the root node of a node, recursively calls and makes every node along the way point to the root node, reducing the height of the tree
+    fn find_root(&mut self, u: usize) -> usize {
+        if self.parent[u] != u {
+            self.parent[u] = self.find_root(self.parent[u]);
+        }
+        return self.parent[u]; 
     }
 }
