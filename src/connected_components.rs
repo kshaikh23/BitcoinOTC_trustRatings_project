@@ -56,7 +56,7 @@ pub mod connected_components {
         let mut node_map = HashMap::new();
         let mut index = 0;
 
-        // Map each unique node to an index (For the strong_ratings_data)
+        // Map each unique node to an index (This is done specifically for the strong_ratings_data)
         for &(u, v, _, _) in data {
             node_map.entry(u).or_insert_with(|| {let i = index; index += 1; i});
             node_map.entry(v).or_insert_with(|| {let i = index; index += 1; i});
