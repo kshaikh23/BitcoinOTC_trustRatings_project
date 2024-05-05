@@ -1,11 +1,11 @@
-#[cfg(test)]
-mod tests;
 mod data_manipulation;
 use data_manipulation::data_manipulation::{read_file, col_to_vec, epoch_to_date, strong_ratings_only};
 mod connected_components;
 use connected_components::connected_components::{components_and_sizes};
 mod visuals;
 use visuals::visuals::{time_ratings_plot, ratings_distribution_bargraph};
+#[cfg(test)]
+mod tests;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let data: Vec<(i32, i32, i32, f64)> = read_file("bitcoinOTC_trust_data.csv");

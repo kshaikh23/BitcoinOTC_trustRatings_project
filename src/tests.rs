@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod test {
     use crate::col_to_vec;
-    use crate::VecType;
+    use crate::data_manipulation::data_manipulation::VecType;
     use crate ::epoch_to_date;
 
     #[test]
