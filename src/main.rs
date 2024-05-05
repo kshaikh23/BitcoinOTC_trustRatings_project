@@ -60,7 +60,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Creates filtered data with only trust ratings over 7
     let strong_ratings_data: Vec<(i32, i32, i32, f64)> = strong_ratings_only(&data);
 
-    println!("Number of trust ratings over 7: {}\n", strong_ratings_data.len());
+    println!("Number of trust ratings over 7: {} ({:.2}%)\n", strong_ratings_data.len(), (strong_ratings_data.len() as f64 / data.len() as f64)*100.0);
 
     let (full_data_components, full_data_component_sizes) = components_and_sizes(&data);
     println!("Full data:\nConnected Components: {}\nSize of each component: {:?}\n", full_data_components, full_data_component_sizes); 
