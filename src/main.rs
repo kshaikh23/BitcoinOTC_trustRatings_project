@@ -224,6 +224,43 @@ impl ConnectedComponents{
     }
 }
 
+// Returns number of connected components and size of each component
+pub fn components_and_sizes(data: &Vec<(i32, i32, i32, f64)>) -> (usize, Vec<usize>) {
+    let mut node_map = HashMap::new();
+    let mut index = 0;
+
+    // Map each unique node to an index (For the strong_ratings_data)
+    for &(u, v, _, _) in data {
+        node_map.entry(u).or_insert_with(|| {let i = index; index += 1; i});
+        node_map.entry(v).or_insert_with(|| {let i = index; index += 1; i});
+    }
+
+    let mut cc = ConnectedComponents::new(node_map.len());
+
+    // Run merge function on each edge in data using the node_map
+    for &(u, v, _, _) in data {
+        cc.merge(*node_map.get(&u).unwrap(), *node_map.get(&v).unwrap());
+    }
+
+    // Count connected components and their sizes
+    let mut component_sizes = vec![0; node_map.len()];
+    let mut components: usize = 0; 
+    let mut seen = vec![false; node_map.len()];
+    for &index in node_map.values() {
+        let root = cc.find_root(index);
+        if !seen[root] {
+            seen[root] = true;
+            components += 1;
+            component_sizes[root] = cc.size[root];
+        }
+    }
+
+    // Removes not needed entries
+    component_sizes.retain(|&x| x > 0);
+
+    return (components, component_sizes)
+}
+
 // Returns number of nodes in the graph dataset
 pub fn node_count(data: &Vec<(i32, i32, i32, f64)>) -> usize {
     let mut nodes = HashSet::new();
